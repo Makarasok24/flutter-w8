@@ -5,7 +5,6 @@ import 'package:week_8_practice/ui/providers/student_provider.dart';
 
 class StudentForm extends StatefulWidget {
   final Mode mode;
-  //final String? id;
   final Student? student;
   const StudentForm({super.key, required this.mode, this.student});
 
@@ -47,13 +46,20 @@ class _StudentFormState extends State<StudentForm> {
       String lastName = _lastNameController.text;
       int age = int.tryParse(_ageController.text) ?? 0;
       String email = _emailController.text;
+
       if (widget.mode == Mode.add) {
         final StudentProvider studentProvider = context.read<StudentProvider>();
-        studentProvider.addStudent(firstName,lastName, age, email);
+        studentProvider.addStudent(firstName, lastName, age, email);
         Navigator.pop(context);
       } else {
         final StudentProvider studentProvider = context.read<StudentProvider>();
-        studentProvider.updateStudent(widget.student!.id, firstName,lastName, age, email);
+        studentProvider.updateStudent(
+          widget.student!.id,
+          firstName,
+          lastName,
+          age,
+          email,
+        );
         Navigator.pop(context);
       }
     }

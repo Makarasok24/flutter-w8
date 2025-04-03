@@ -20,6 +20,7 @@ class StudentProvider extends ChangeNotifier {
     try {
       // 1- loading state
       students = AsyncValue.loading();
+      await Future.delayed(Duration(seconds: 1));
       notifyListeners();
 
       // 2 - Fetch users
@@ -59,6 +60,7 @@ class StudentProvider extends ChangeNotifier {
 
     // 2- Call repo to fetch
     getStudents();
+    notifyListeners();
   }
 
   void updateStudent(

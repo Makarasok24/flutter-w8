@@ -20,26 +20,27 @@ class FirebaseStudentRepository extends StudentRepository {
     required int age,
     required String email,
   }) async {
-    //create a new student
     final newStudentData = {
       'firstName': firstName,
       'lastName': lastName,
       'age': age,
       'email': email,
     };
+
     final http.Response response = await http.post(
       uri,
+      headers: {'Content-Type': 'application/json'},
       body: json.encode(newStudentData),
     );
 
     if (response.statusCode != HttpStatus.ok) {
-      throw Exception("Filed to add student");
+      throw Exception("Failed to add student");
     }
 
-    //firebase returns the new id in 'name'
-    final newId = json.decode(response.body)['firstName'];
-
-    //return created student
+    // Correct way to get Firebase-generated ID
+    final responseData = json.decode(response.body);
+    final newId =
+        responseData['name'] as String; // Firebase returns ID in 'name' field
 
     return Student(
       id: newId,
@@ -56,15 +57,23 @@ class FirebaseStudentRepository extends StudentRepository {
 
     if (response.statusCode != HttpStatus.ok &&
         response.statusCode != HttpStatus.created) {
-      throw Exception("Filed to load students");
+      throw Exception("Failed to load students");
     }
 
-    final studentData = json.decode(response.body) as Map<String, dynamic>?;
+    try {
+      final studentData = json.decode(response.body) as Map<String, dynamic>?;
+      print('Student data: $studentData');
 
-    if (studentData == null) return [];
-    return studentData.entries
-        .map((entry) => DtoStudent.fromJson(entry.key, entry.value))
-        .toList();
+      if (studentData == null || studentData.isEmpty) return [];
+
+      return studentData.entries.map((entry) {
+        final studentJson = entry.value as Map<String, dynamic>? ?? {};
+        return DtoStudent.fromJson(entry.key, studentJson);
+      }).toList();
+    } catch (e) {
+      print('Error parsing students: $e');
+      throw Exception('Failed to parse student data');
+    }
   }
 
   @override
@@ -82,7 +91,7 @@ class FirebaseStudentRepository extends StudentRepository {
   Future<Student> updateStudent({
     required String id,
     required String firstName,
-    required lastName,
+    required String lastName,
     required int age,
     required String email,
   }) async {
@@ -94,13 +103,13 @@ class FirebaseStudentRepository extends StudentRepository {
       'email': email,
     };
 
-    final http.Response reresponse = await http.put(
+    final http.Response response = await http.put(
       uri,
       headers: {'Content-Type': 'application/json'},
       body: json.encode(updateStudentData),
     );
 
-    if (reresponse.statusCode != HttpStatus.ok) {
+    if (response.statusCode != HttpStatus.ok) {
       throw Exception("Filed to update student");
     }
 

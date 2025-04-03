@@ -4,10 +4,10 @@ class DtoStudent {
   static Student fromJson(String id, Map<String, dynamic> json) {
     return Student(
       id: id,
-      firstName: json['firstName'] as String,
-      lastName: json['lastName'] as String,
-      age: json['age'] as int,
-      email: json['email'] as String,
+      firstName: json['firstName'] as String? ?? '',
+      lastName: json['lastName'] as String? ?? '',
+      age: json['age'] as int? ?? 0,
+      email: json['email'] as String? ?? '',
     );
   }
 

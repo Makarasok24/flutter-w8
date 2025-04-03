@@ -1,14 +1,17 @@
-
-import 'package:http/http.dart' as http;
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:week_8_practice/data/repository/firebase_student_repository.dart';
+import 'package:week_8_practice/data/repository/student_repository.dart';
+import 'package:week_8_practice/ui/providers/student_provider.dart';
+import 'package:week_8_practice/ui/screens/app.dart';
 
 void main() async {
-  const String baseUrl = "https://week-8-practice-3484f-default-rtdb.asia-southeast1.firebasedatabase.app";
+  final StudentRepository studentRepository = FirebaseStudentRepository();
 
-  const String students = "students";
-  const String allLOcations = '$baseUrl/$students.json';
-
-  Uri uri = Uri.parse(allLOcations);
-  final http.Response response = await http.get(uri);
-
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => StudentProvider(studentRepository),
+      child: MaterialApp(debugShowCheckedModeBanner: false, home: const App()),
+    ),
+  );
 }
-
